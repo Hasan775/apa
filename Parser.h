@@ -16,6 +16,7 @@ public:
     void require(TokenType type);
     void require(TokenType type, string value);
     Token next();
+    void back();
     bool isEOF();
     Token peek();
     vector<shared_ptr<Node>> parseTopLevel();
@@ -23,5 +24,5 @@ public:
     shared_ptr<Node> parseNumber();
     shared_ptr<Node> parseVariable();
     shared_ptr<Node> parseAtom();
-    shared_ptr<Node> maybeBinary(shared_ptr<Node> left);
+    shared_ptr<Node> maybeBinary(shared_ptr<Node> left, int befprec);
 };

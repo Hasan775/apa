@@ -49,7 +49,7 @@ void printAST(shared_ptr<Node> n, string offset){
 }
 int main(){
     Lexer lexer = Lexer();
-    string code = "5 = 6 + 7;\n6 = 7 * 3 + 1";
+    string code = "5 = 6 + 7;\nvariable = 5 + 7 * 3 + 1;";
     lexer.code = code;
     vector<Token> tokens = lexer.lexAnalysis();
     tokens = lexer.FilterTokens(tokens);

@@ -1,14 +1,24 @@
 #include "Parser.h"
 
 map<string, TokenType> tokentypes;
-
+map<string, int> precedence;
+map<string, int> GetPrecedence(){
+    map<string, int> prec = {};
+    prec["="] = 1;
+    prec["+"] = 2;
+    prec["-"] = 2;
+    prec["*"] = 3;
+    prec["/"] = 3;
+    return prec;
+}
 Parser::Parser(vector<Token> tokens){
     this->tokens = tokens;
     this->tok = tokens[0];
     tokentypes = GetTypes();
+    precedence = GetPrecedence();
 }
 void Parser::UnexpectedToken(){
-    Error::throwMessage("Unexpected token type: " + tok.type.name);
+    Error::throwMessage("Unexpected token type: " + tok.type.name +  to_string(pos));
 }
 bool Parser::match(TokenType type){
     if (tok.type.name == type.name){
@@ -59,6 +69,15 @@ Token Parser::next(){
         return tokens[pos - 1];
     }
 }
+void Parser::back(){
+    if (pos != 0){
+        pos -= 1;
+        tok = tokens[pos];
+    }
+    else{
+        Error::throwMessage("This is begin of file. You can't go back");
+    }
+}
 Token Parser::peek(){
     if (!isEOF()){
         return tokens[pos + 1];
@@ -73,6 +92,7 @@ vector<shared_ptr<Node>> Parser::parseTopLevel(){
     while (!isEOF())
     {
         prog.push_back(parsePart());
+        cout<<"hi";
         require(tokentypes["PUNC"]);
     }
     return prog;
@@ -80,7 +100,7 @@ vector<shared_ptr<Node>> Parser::parseTopLevel(){
 shared_ptr<Node> Parser::parsePart(){
     auto token = parseAtom();
     shared_ptr<Node> expr = {};
-    expr = maybeBinary(token);
+    expr = maybeBinary(token, 0);
     return expr;
 }
 shared_ptr<Node> Parser::parseAtom(){
@@ -90,7 +110,6 @@ shared_ptr<Node> Parser::parseAtom(){
     if (match(tokentypes["VAR"])){
         return parseVariable();
     }
-    cout<<"1";
     UnexpectedToken();
     return nullptr;
 }
@@ -104,12 +123,16 @@ shared_ptr<Node> Parser::parseVariable(){
     next();
     return num;
 }
-shared_ptr<Node> Parser::maybeBinary(shared_ptr<Node> left){
+shared_ptr<Node> Parser::maybeBinary(shared_ptr<Node> left, int befprec){
     if(!match(tokentypes["OP"]) && !match(tokentypes["ASSIGN"])){
         return left;
     }
-    auto oper = tok;
-    next();
-    auto right = parsePart();
-    return make_shared<BinaryOperationNode>(left, right, oper.value);
+    if(precedence[tok.value] > befprec){
+
+        Token oper = tok;
+        next();
+        shared_ptr<Node> lside = make_shared<BinaryOperationNode>(left, maybeBinary(parseAtom(), precedence[oper.value]), oper.value);
+        return maybeBinary(lside, 0);
+    }
+    return left;
 }
