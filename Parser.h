@@ -16,13 +16,14 @@ public:
     void require(TokenType type);
     void require(TokenType type, string value);
     Token next();
-    void back();
     bool isEOF();
     Token peek();
     vector<shared_ptr<Node>> parseTopLevel();
+    vector<shared_ptr<Node>> delimited(string start, string stop, string separator);
     shared_ptr<Node> parsePart();
     shared_ptr<Node> parseNumber();
     shared_ptr<Node> parseVariable();
+    shared_ptr<Node> parseCall();
     shared_ptr<Node> parseAtom();
     shared_ptr<Node> maybeBinary(shared_ptr<Node> left, int befprec);
 };

@@ -10,7 +10,7 @@ TokenType::TokenType(string name, string regexp){
     this->regexp = regexp;
 }
 vector<TokenType> tokenTypes = {
-    TokenType("PUNC", "[\\(\\)\\[\\];]"),
+    TokenType("PUNC", "[\\(\\)\\[\\];,]"),
     TokenType("OP", "[\\+\\-\\*\\/]"),
     TokenType("ASSIGN", "="),
     TokenType("NUMBER", "[0-9]+"),

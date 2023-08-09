@@ -11,13 +11,15 @@ enum NodeTypes{
     ExpressinN,
     NumberN,
     BinaryOperationN,
-    VariableN
+    VariableN,
+    CallN
 };
 class Node;
 class ExpressionNode;
 class NumberNode;
 class BinaryOperationNode;
 class VariableNode;
+class CallNode;
 class Node{
 protected:
     NodeTypes type;
@@ -27,6 +29,7 @@ public:
     virtual shared_ptr<NumberNode> getNode(NumberNode* node);
     virtual shared_ptr<BinaryOperationNode> getNode(BinaryOperationNode* node);
     virtual shared_ptr<VariableNode> getNode(VariableNode* node);
+    virtual shared_ptr<CallNode> getNode(CallNode* node);
 };
 class ExpressionNode : public Node{
 public:
@@ -57,4 +60,12 @@ public:
     shared_ptr<VariableNode> getNode(VariableNode* node) override;
     VariableNode();
     VariableNode(string name);
+};
+class CallNode : public Node{
+public:
+    string name;
+    vector<shared_ptr<Node>> operands;
+    shared_ptr<CallNode> getNode(CallNode* node) override;
+    CallNode();
+    CallNode(string name, vector<shared_ptr<Node>> operands);
 };

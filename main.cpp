@@ -46,10 +46,20 @@ void printAST(shared_ptr<Node> n, string offset){
         shared_ptr<VariableNode> node = n->getNode(new VariableNode());
         cout<<offset<<"name: "<<node->name<<",\n";
     }
+    else if (n->getType() == CallN){
+        shared_ptr<CallNode> node = n->getNode(new CallNode());
+        cout<<offset<<"body: ["<<"\n";
+        for (shared_ptr<Node> op : node->operands){
+            cout<<offset<<"{"<<"\n";
+            printAST(op, offset + "    ");
+            cout<<offset<<"},"<<"\n";
+        }
+        cout<<offset<<"]"<<"\n";
+    }
 }
 int main(){
     Lexer lexer = Lexer();
-    string code = "5 = 6 + 7;\nvariable = 5 + 7 * 3 + 1;";
+    string code = "ki = 5;\n hello = 12;\nhi(hello, ki, 4 * 4 + 3,);";
     lexer.code = code;
     vector<Token> tokens = lexer.lexAnalysis();
     tokens = lexer.FilterTokens(tokens);
