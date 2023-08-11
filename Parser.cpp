@@ -5,10 +5,15 @@ map<string, int> precedence;
 map<string, int> GetPrecedence(){
     map<string, int> prec = {};
     prec["="] = 1;
-    prec["+"] = 2;
-    prec["-"] = 2;
-    prec["*"] = 3;
-    prec["/"] = 3;
+    prec[">"] = 3;
+    prec["<"] = 3;
+    prec[">="] = 3;
+    prec["<="] = 3;
+    prec["=="] = 3;
+    prec["+"] = 9;
+    prec["-"] = 9; 
+    prec["*"] = 10;
+    prec["/"] = 10;
     return prec;
 }
 Parser::Parser(vector<Token> tokens){
@@ -116,6 +121,12 @@ shared_ptr<Node> Parser::parseAtom(){
     if (match(tokentypes["NUMBER"])){
         return parseNumber();
     }
+    if (match(tokentypes["STRING"])){
+        return parseString();
+    }
+    if (match(tokentypes["ID"])){
+        return parseKeyword();
+    }
     if (match(tokentypes["VAR"])){
         if (peek().type.name == tokentypes["PUNC"].name &&  peek().value == "("){
             return parseCall();   
@@ -130,6 +141,22 @@ shared_ptr<Node> Parser::parseNumber(){
     next();
     return num;
 }
+shared_ptr<Node> Parser::parseString(){
+    auto str = make_shared<StringNode>(tok.value.substr(1, tok.value.size() - 2));
+    next();
+    return str;
+}
+shared_ptr<Node> Parser::parseBool(){
+    shared_ptr<BoolNode> bl;
+    if (tok.value == "true"){
+        bl = make_shared<BoolNode>(true);
+    }
+    else{
+        bl = make_shared<BoolNode>(false);
+    }
+    next();
+    return bl;
+}
 shared_ptr<Node> Parser::parseVariable(){
     auto var = make_shared<VariableNode>(tok.value);
     next();
@@ -142,8 +169,14 @@ shared_ptr<Node> Parser::parseCall(){
     next();
     return call;
 }
+shared_ptr<Node> Parser::parseKeyword(){
+    if (tok.value == "true" || tok.value =="false"){
+        return parseBool();
+    }
+    return nullptr;
+}
 shared_ptr<Node> Parser::maybeBinary(shared_ptr<Node> left, int befprec){
-    if(!match(tokentypes["OP"]) && !match(tokentypes["ASSIGN"])){
+    if(!match(tokentypes["OP"])){
         return left;
     }
     if(precedence[tok.value] > befprec){

@@ -11,12 +11,13 @@ TokenType::TokenType(string name, string regexp){
 }
 vector<TokenType> tokenTypes = {
     TokenType("PUNC", "[\\(\\)\\[\\];,]"),
-    TokenType("OP", "[\\+\\-\\*\\/]"),
+    TokenType("OP", "[\\+\\-\\*\\/\\<\\>\\=]+"),
     TokenType("ASSIGN", "="),
     TokenType("NUMBER", "[0-9]+"),
+    TokenType("ID", "[a-zA-Z0-9]+"),
     TokenType("VAR", "[a-zA-Z0-9]+"),
     TokenType("SPACE", "\\s"),
-    TokenType("STRING", "\"[^\\n^\"]+\""),
+    TokenType("STRING", "\"[\\sa-zA-Z0-9]*\""),
 };
 vector<TokenType> GetTypesVector(){
     return tokenTypes;

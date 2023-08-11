@@ -1,5 +1,17 @@
 #include "Lexer.h"
 #include "Error.h"
+vector<string> keywords = {"true",
+"false",
+"if",
+"else"};
+bool Lexer::CheckToKeyWord(string word){
+    for (auto keyword : keywords){
+        if (keyword == word){
+            return true;
+        }
+    }
+    return false;
+}
 vector<Token> Lexer::lexAnalysis(){
     vector<TokenType> tokentypes = GetTypesVector();
     vector<Token> tokens = {};
@@ -17,6 +29,9 @@ vector<Token> Lexer::lexAnalysis(){
             regex regular("^" + tokentype.regexp);
             regex_search(code.c_str(), result, regular);
             if (result.size() != 0){
+                if (tokentype.name == "ID" && !CheckToKeyWord(result[0])){
+                    continue;
+                }
                 if (result[0] == "\n"){
                     line += 1;
                     pos = 0;

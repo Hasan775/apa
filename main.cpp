@@ -1,10 +1,11 @@
 #include <iostream>
-#include <regex>
+#include <fstream>
 #include <string>
 #include "Lexer.h"
 #include "Token.h"
 #include "Node.h"
 #include "Parser.h"
+#include "Runner.h"
 using namespace std;
 void printAST(shared_ptr<Node> n, string offset){
     cout<<offset<<"type: "<<n->getType()<<",\n";
@@ -22,15 +23,13 @@ void printAST(shared_ptr<Node> n, string offset){
         shared_ptr<NumberNode> node = n->getNode(new NumberNode());
         cout<<offset<<"value: "<<node->value<<"\n";
     }
-    else if (n->getType() == BinaryOperationN){
-        shared_ptr<BinaryOperationNode> node = n->getNode(new BinaryOperationNode());
-        cout<<offset<<"left: {\n";
-        printAST(node->left, offset + "    ");
-        cout<<offset<<"},\n";
-        cout<<offset<<"right: {\n";
-        printAST(node->right, offset + "    ");
-        cout<<offset<<"},\n";
-        cout<<offset<<"operator: "<<node->op<<"\n";
+    else if (n->getType() == StringN){
+        shared_ptr<StringNode> node = n->getNode(new StringNode());
+        cout<<offset<<"value: "<<node->value<<"\n";
+    }
+    else if (n->getType() == BoolN){
+        shared_ptr<BoolNode> node = n->getNode(new BoolNode());
+        cout<<offset<<"value: "<<node->value<<"\n";
     }
     else if (n->getType() == BinaryOperationN){
         shared_ptr<BinaryOperationNode> node = n->getNode(new BinaryOperationNode());
@@ -56,20 +55,48 @@ void printAST(shared_ptr<Node> n, string offset){
         }
         cout<<offset<<"]"<<"\n";
     }
+    else if (n->getType() == IfN){
+        shared_ptr<IfNode> node = n->getNode(new IfNode());
+        cout<<offset<<"condition: {"<<"\n";
+        printAST(node->cond, offset + "    ");
+        cout<<offset<<"},"<<"\n";
+        cout<<offset<<"body: ["<<"\n";
+        for (shared_ptr<Node> bo : node->body){
+            cout<<offset<<"{"<<"\n";
+            printAST(bo, offset + "    ");
+            cout<<offset<<"},"<<"\n";
+        }
+        for (shared_ptr<Node> e : node->els){
+            cout<<offset<<"{"<<"\n";
+            printAST(e, offset + "    ");
+            cout<<offset<<"},"<<"\n";
+        }
+        cout<<offset<<"]"<<"\n";
+    }
+}
+string ReadFile(){
+    string line, code = "";
+
+    ifstream File;
+    File.open("../code.txt");
+    while (File.good()) {
+        File>>line;
+        code += line;
+    }
+    File.close();
+    return code;
 }
 int main(){
     Lexer lexer = Lexer();
-    string code = "ki = 5;\n hello = 12;\nhi(hello, ki, 4 * 4 + 3,);";
+    string code = ReadFile();
     lexer.code = code;
     vector<Token> tokens = lexer.lexAnalysis();
     tokens = lexer.FilterTokens(tokens);
-    for (auto i : tokens){
-        cout<<"["<<i.type.name<<": "<<i.value<<"]"<<"\n";
-    }
     Parser parser = Parser(tokens);
     vector<shared_ptr<Node>> vn= parser.parseTopLevel();
-    shared_ptr<Node> n4 = make_shared<ExpressionNode>(vn);
-    cout<<"{\n";
-    printAST(n4, "    ");
-    cout<<"}";
+    shared_ptr<Node> exprn = make_shared<ExpressionNode>(vn);
+    Runner runner = Runner();
+    printAST(exprn, "");
+    cout<<"\n";
+    runner.run(exprn);
 }

@@ -14,6 +14,16 @@ shared_ptr<NumberNode> Node::getNode(NumberNode* node){
     Error::throwMessage("This node type can't access to this methodh");
     return nullptr;
 }
+shared_ptr<StringNode> Node::getNode(StringNode* node){
+    delete node;
+    Error::throwMessage("This node type can't access to this methodh");
+    return nullptr;
+}
+shared_ptr<BoolNode> Node::getNode(BoolNode* node){
+    delete node;
+    Error::throwMessage("This node type can't access to this methodh");
+    return nullptr;
+}
 shared_ptr<BinaryOperationNode> Node::getNode(BinaryOperationNode* node){
     delete node;
     Error::throwMessage("This node type can't access to this method");
@@ -29,7 +39,11 @@ shared_ptr<CallNode> Node::getNode(CallNode* node){
     Error::throwMessage("This node type can't access to this method");
     return nullptr;
 }
-
+shared_ptr<IfNode> Node::getNode(IfNode* node){
+    delete node;
+    Error::throwMessage("This node type can't access to this method");
+    return nullptr;
+}
 
 //ExpressionNode class
 shared_ptr<ExpressionNode> ExpressionNode::getNode(ExpressionNode* node){
@@ -57,6 +71,36 @@ NumberNode::NumberNode(){
 }
 NumberNode::NumberNode(int value){
     this->type = NumberN;
+    this->value = value;
+}
+
+
+//StringNode class
+shared_ptr<StringNode> StringNode::getNode(StringNode* node){
+    delete node;
+    auto expr = make_shared<StringNode>(value);
+    return expr;
+}
+StringNode::StringNode(){
+    this->type = StringN;
+}
+StringNode::StringNode(string value){
+    this->type = StringN;
+    this->value = value;
+}
+
+
+//BoolNode class
+shared_ptr<BoolNode> BoolNode::getNode(BoolNode* node){
+    delete node;
+    auto expr = make_shared<BoolNode>(value);
+    return expr;
+}
+BoolNode::BoolNode(){
+    this->type = BoolN;
+}
+BoolNode::BoolNode(bool value){
+    this->type = BoolN;
     this->value = value;
 }
 
@@ -106,4 +150,22 @@ CallNode::CallNode(string name, vector<shared_ptr<Node>> operands){
     this->type = CallN;
     this->name = name;
     this->operands = operands;
+}
+
+
+//IfNode class
+//CallNode class
+shared_ptr<IfNode> IfNode::getNode(IfNode* node){
+    delete node;
+    auto expr = make_shared<IfNode>(cond, body, els);
+    return expr;
+}
+IfNode::IfNode(){
+    this->type = IfN;
+}
+IfNode::IfNode(shared_ptr<Node> cond, vector<shared_ptr<Node>> body, vector<shared_ptr<Node>> els){
+    this->type = IfN;
+    this->cond = cond;
+    this->body = body;
+    this->els = els;
 }
