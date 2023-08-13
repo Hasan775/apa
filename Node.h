@@ -15,7 +15,8 @@ enum NodeTypes{
     BinaryOperationN,
     VariableN,
     CallN,
-    IfN
+    IfN,
+    CycleN
 };
 class Node;
 class ExpressionNode;
@@ -26,6 +27,7 @@ class BinaryOperationNode;
 class VariableNode;
 class CallNode;
 class IfNode;
+class CycleNode;
 class Node{
 protected:
     NodeTypes type;
@@ -39,6 +41,7 @@ public:
     virtual shared_ptr<VariableNode> getNode(VariableNode* node);
     virtual shared_ptr<CallNode> getNode(CallNode* node);
     virtual shared_ptr<IfNode> getNode(IfNode* node);
+    virtual shared_ptr<CycleNode> getNode(CycleNode* node);
 };
 class ExpressionNode : public Node{
 public:
@@ -101,4 +104,13 @@ public:
     IfNode();
     IfNode(shared_ptr<Node> cond, vector<shared_ptr<Node>> body);
     IfNode(shared_ptr<Node> cond, vector<shared_ptr<Node>> body, vector<shared_ptr<Node>> els);
+};
+class CycleNode : public Node{
+public:
+    string name;
+    vector<shared_ptr<Node>> cond;
+    vector<shared_ptr<Node>> body;
+    shared_ptr<CycleNode> getNode(CycleNode* node) override;
+    CycleNode();
+    CycleNode(string name, vector<shared_ptr<Node>> cond, vector<shared_ptr<Node>> body);
 };

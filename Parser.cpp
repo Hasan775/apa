@@ -92,7 +92,7 @@ vector<shared_ptr<Node>> Parser::parseTopLevel(){
     }
     return prog;
 }
-vector<shared_ptr<Node>> Parser::delimited(string start, string stop, string separator, bool islastseparatorrequired){
+vector<shared_ptr<Node>> Parser::delimited(string start, string stop, string separator){
     vector<shared_ptr<Node>> exprs = {};
     bool isfirst = true;
     require(tokentypes["PUNC"], start);
@@ -161,7 +161,7 @@ shared_ptr<Node> Parser::parseVariable(){
 shared_ptr<Node> Parser::parseCall(){
     auto name = tok.value;
     next();
-    auto call = make_shared<CallNode>(name, delimited("(", ")", ",", false));
+    auto call = make_shared<CallNode>(name, delimited("(", ")", ","));
     return call;
 }
 shared_ptr<Node> Parser::parseIf(){
@@ -169,7 +169,7 @@ shared_ptr<Node> Parser::parseIf(){
     require(tokentypes["PUNC"], "(");
     auto cond = parsePart();
     require(tokentypes["PUNC"], ")");
-    auto body = delimited("{", "}", ";", true);
+    auto body = delimited("{", "}", ";");
     shared_ptr<IfNode> ifn;
     if (match(tokentypes["ID"], "else")){
         next();
@@ -178,7 +178,7 @@ shared_ptr<Node> Parser::parseIf(){
             els.push_back(parseIf());
         }
         else{
-            els = delimited("{", "}", ";", true);
+            els = delimited("{", "}", ";");
         }
         ifn  = make_shared<IfNode>(cond, body, els);
     }
@@ -187,12 +187,28 @@ shared_ptr<Node> Parser::parseIf(){
     }
     return ifn;
 }
+shared_ptr<Node> Parser::parseCycle(string name){
+    vector<shared_ptr<Node>> cond = {};
+    require(tokentypes["ID"], name);
+    if  (name == "while"){
+        require(tokentypes["PUNC"], "(");
+        cond.push_back(parsePart());
+        require(tokentypes["PUNC"], ")");
+    }
+    if  (name == "for"){
+        cond = delimited("(", ")", ";");
+    }
+    return make_shared<CycleNode>(name, cond, delimited("{", "}", ";"));
+}
 shared_ptr<Node> Parser::parseKeyword(){
     if (tok.value == "true" || tok.value =="false"){
         return parseBool();
     }
     if (tok.value == "if"){
         return parseIf();
+    }
+    if (tok.value == "while" || tok.value == "for"){
+        return parseCycle(tok.value);
     }
     return nullptr;
 }

@@ -14,4 +14,5 @@ public:
     any GetVariable(string name);
     any runCall(shared_ptr<CallNode> call);
     void runIf(shared_ptr<IfNode> node);
+    void runCycle(shared_ptr<CycleNode> node);
 };

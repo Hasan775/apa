@@ -44,6 +44,12 @@ shared_ptr<IfNode> Node::getNode(IfNode* node){
     Error::throwMessage("This node type can't access to this method");
     return nullptr;
 }
+shared_ptr<CycleNode> Node::getNode(CycleNode* node){
+    delete node;
+    Error::throwMessage("This node type can't access to this method");
+    return nullptr;
+}
+
 
 //ExpressionNode class
 shared_ptr<ExpressionNode> ExpressionNode::getNode(ExpressionNode* node){
@@ -154,7 +160,6 @@ CallNode::CallNode(string name, vector<shared_ptr<Node>> operands){
 
 
 //IfNode class
-//CallNode class
 shared_ptr<IfNode> IfNode::getNode(IfNode* node){
     delete node;
     auto expr = make_shared<IfNode>(cond, body, els);
@@ -173,4 +178,21 @@ IfNode::IfNode(shared_ptr<Node> cond, vector<shared_ptr<Node>> body, vector<shar
     this->cond = cond;
     this->body = body;
     this->els = els;
+}
+
+
+//CycleNode class
+shared_ptr<CycleNode> CycleNode::getNode(CycleNode* node){
+    delete node;
+    auto expr = make_shared<CycleNode>(name, cond, body);
+    return expr;
+}
+CycleNode::CycleNode(){
+    this->type = CycleN;
+}
+CycleNode::CycleNode(string name, vector<shared_ptr<Node>> cond, vector<shared_ptr<Node>> body){
+    this->type = CycleN;
+    this->name = name;
+    this->cond = cond;
+    this->body = body;
 }

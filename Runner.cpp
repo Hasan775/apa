@@ -35,6 +35,10 @@ any Runner::run(shared_ptr<Node> node){
         auto n = node->getNode(new IfNode);
         runIf(n);
     }
+    else if (node->getType() == CycleN){
+        auto n = node->getNode(new CycleNode);
+        runCycle(n);
+    }
     return 0;
 }
 any Runner::runBinary(shared_ptr<BinaryOperationNode> node){
@@ -115,13 +119,13 @@ any Runner::runCall(shared_ptr<CallNode> call){
     if (call->name == "print"){
         any arg = run(call->operands[0]);
         if (arg.type().name() == typeid(int).name()){
-            cout<<any_cast<int>(arg);
+            cout<<any_cast<int>(arg)<<"\n";
         }
         else if (arg.type().name() == typeid(string).name()){
-            cout<<any_cast<string>(arg);
+            cout<<any_cast<string>(arg)<<"\n";
         }
         else if (arg.type().name() == typeid(bool).name()){
-            cout<<any_cast<bool>(arg);
+            cout<<any_cast<bool>(arg)<<"\n";
         }
     }
     if (call->name == "input"){
@@ -150,6 +154,24 @@ void Runner::runIf(shared_ptr<IfNode> node){
     else{
         for (auto expr : node->els){
             run(expr);
+        }
+    }
+}
+void Runner::runCycle(shared_ptr<CycleNode> node){
+    if (node->name == "while"){
+        while(any_cast<bool>(run(node->cond[0]))){
+            for (auto expr : node->body){
+                run(expr);
+            }
+        }
+    }
+    else if (node->name == "for"){
+        run(node->cond[0]);
+        while(any_cast<bool>(run(node->cond[1]))){
+            for (auto expr : node->body){
+                run(expr);
+            }
+            run(node->cond[2]);
         }
     }
 }

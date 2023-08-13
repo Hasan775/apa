@@ -19,7 +19,7 @@ public:
     bool isEOF();
     Token peek();
     vector<shared_ptr<Node>> parseTopLevel();
-    vector<shared_ptr<Node>> delimited(string start, string stop, string separator, bool islastseparatorrequired);
+    vector<shared_ptr<Node>> delimited(string start, string stop, string separator);
     shared_ptr<Node> parsePart();
     shared_ptr<Node> parseNumber();
     shared_ptr<Node> parseString();
@@ -27,6 +27,7 @@ public:
     shared_ptr<Node> parseVariable();
     shared_ptr<Node> parseCall();
     shared_ptr<Node> parseIf();
+    shared_ptr<Node> parseCycle(string name);
     shared_ptr<Node> parseKeyword();
     shared_ptr<Node> parseAtom();
     shared_ptr<Node> maybeBinary(shared_ptr<Node> left, int befprec);
