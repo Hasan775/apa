@@ -1,2 +1,15 @@
-var = 15;
-print(var == 10);
+n1 = int(input());
+n2 = int(input());
+op = input();
+if (op == "+"){
+    print(n1 + n2);
+}
+else if (op == "-"){
+    print(n1 - n2);
+}
+else if (op == "*"){
+    print(n1 * n2);
+}
+else if (op == "/"){
+    print(n1 / n2);
+};

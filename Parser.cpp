@@ -23,7 +23,7 @@ Parser::Parser(vector<Token> tokens){
     precedence = GetPrecedence();
 }
 void Parser::UnexpectedToken(){
-    Error::throwMessage("Unexpected token type: " + tok.type.name +  to_string(pos));
+    Error::throwMessage("Unexpected token type: " + tok.type.name + " on pos " +  to_string(pos)+ ";value is equal to" + tok.value);
 }
 bool Parser::match(TokenType type){
     if (tok.type.name == type.name){
@@ -92,23 +92,19 @@ vector<shared_ptr<Node>> Parser::parseTopLevel(){
     }
     return prog;
 }
-vector<shared_ptr<Node>> Parser::delimited(string start, string stop, string separator){
+vector<shared_ptr<Node>> Parser::delimited(string start, string stop, string separator, bool islastseparatorrequired){
     vector<shared_ptr<Node>> exprs = {};
     bool isfirst = true;
     require(tokentypes["PUNC"], start);
     while (!match(tokentypes["PUNC"], stop))
     {
-        if (isfirst){
-            isfirst = false;
-        }
-        else{
-            require(tokentypes["PUNC"], separator);
-        }
+        exprs.push_back(parsePart());
         if (match(tokentypes["PUNC"], stop)){
             break;
         }
-        exprs.push_back(parsePart());
+        require(tokentypes["PUNC"], separator);
     }
+    next();
     return exprs;
 }
 shared_ptr<Node> Parser::parsePart(){
@@ -165,13 +161,38 @@ shared_ptr<Node> Parser::parseVariable(){
 shared_ptr<Node> Parser::parseCall(){
     auto name = tok.value;
     next();
-    auto call = make_shared<CallNode>(name, delimited("(", ")", ","));
-    next();
+    auto call = make_shared<CallNode>(name, delimited("(", ")", ",", false));
     return call;
+}
+shared_ptr<Node> Parser::parseIf(){
+    require(tokentypes["ID"], "if");
+    require(tokentypes["PUNC"], "(");
+    auto cond = parsePart();
+    require(tokentypes["PUNC"], ")");
+    auto body = delimited("{", "}", ";", true);
+    shared_ptr<IfNode> ifn;
+    if (match(tokentypes["ID"], "else")){
+        next();
+        vector<shared_ptr<Node>> els = {};
+        if (match(tokentypes["ID"], "if")){
+            els.push_back(parseIf());
+        }
+        else{
+            els = delimited("{", "}", ";", true);
+        }
+        ifn  = make_shared<IfNode>(cond, body, els);
+    }
+    else{
+        ifn  = make_shared<IfNode>(cond, body);
+    }
+    return ifn;
 }
 shared_ptr<Node> Parser::parseKeyword(){
     if (tok.value == "true" || tok.value =="false"){
         return parseBool();
+    }
+    if (tok.value == "if"){
+        return parseIf();
     }
     return nullptr;
 }

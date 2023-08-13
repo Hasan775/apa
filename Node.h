@@ -99,5 +99,6 @@ public:
     vector<shared_ptr<Node>> els;
     shared_ptr<IfNode> getNode(IfNode* node) override;
     IfNode();
+    IfNode(shared_ptr<Node> cond, vector<shared_ptr<Node>> body);
     IfNode(shared_ptr<Node> cond, vector<shared_ptr<Node>> body, vector<shared_ptr<Node>> els);
 };

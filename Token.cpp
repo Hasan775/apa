@@ -10,14 +10,13 @@ TokenType::TokenType(string name, string regexp){
     this->regexp = regexp;
 }
 vector<TokenType> tokenTypes = {
-    TokenType("PUNC", "[\\(\\)\\[\\];,]"),
+    TokenType("PUNC", "[\\(\\)\\[\\]\\{\\};,]"),
+    TokenType("NUMBER", "-?[0-9]+"),
     TokenType("OP", "[\\+\\-\\*\\/\\<\\>\\=]+"),
-    TokenType("ASSIGN", "="),
-    TokenType("NUMBER", "[0-9]+"),
     TokenType("ID", "[a-zA-Z0-9]+"),
     TokenType("VAR", "[a-zA-Z0-9]+"),
     TokenType("SPACE", "\\s"),
-    TokenType("STRING", "\"[\\sa-zA-Z0-9]*\""),
+    TokenType("STRING", "\"[^\"\\t\\n]*\""),
 };
 vector<TokenType> GetTypesVector(){
     return tokenTypes;

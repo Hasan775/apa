@@ -79,12 +79,11 @@ string ReadFile(){
 
     ifstream File;
     File.open("../code.txt");
-    while (File.good()) {
-        File>>line;
-        code += line;
+    while (File) {
+        code += File.get();
     }
     File.close();
-    return code;
+    return code.substr(0, code.size() - 1);
 }
 int main(){
     Lexer lexer = Lexer();
@@ -96,7 +95,6 @@ int main(){
     vector<shared_ptr<Node>> vn= parser.parseTopLevel();
     shared_ptr<Node> exprn = make_shared<ExpressionNode>(vn);
     Runner runner = Runner();
-    printAST(exprn, "");
     cout<<"\n";
     runner.run(exprn);
 }

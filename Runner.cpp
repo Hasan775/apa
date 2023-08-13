@@ -31,6 +31,10 @@ any Runner::run(shared_ptr<Node> node){
         auto n = node->getNode(new CallNode);
         return runCall(n);
     }
+    else if (node->getType() == IfN){
+        auto n = node->getNode(new IfNode);
+        runIf(n);
+    }
     return 0;
 }
 any Runner::runBinary(shared_ptr<BinaryOperationNode> node){
@@ -93,6 +97,9 @@ any Runner::evalute(string left, string right, string op){
     if (op == "+"){
         return left + right;
     }
+    else if (op == "=="){
+        return left == right;
+    }
     else{
         Error::throwMessage("You can't do this operation with string");
         return 0;
@@ -122,5 +129,27 @@ any Runner::runCall(shared_ptr<CallNode> call){
         cin>>read;
         return read;
     }
+    if (call->name == "int"){
+        any arg = run(call->operands[0]);
+        if (arg.type().name() == typeid(string).name()){
+            return stoi(any_cast<string>(arg));
+        }
+        else if (arg.type().name() == typeid(bool).name()){
+            return any_cast<bool>(arg);
+        }
+    }
     return 0;
+}
+void Runner::runIf(shared_ptr<IfNode> node){
+    any cond = run(node->cond);
+    if (any_cast<bool>(cond)){
+        for (auto expr : node->body){
+            run(expr);
+        }
+    }
+    else{
+        for (auto expr : node->els){
+            run(expr);
+        }
+    }
 }

@@ -163,6 +163,11 @@ shared_ptr<IfNode> IfNode::getNode(IfNode* node){
 IfNode::IfNode(){
     this->type = IfN;
 }
+IfNode::IfNode(shared_ptr<Node> cond, vector<shared_ptr<Node>> body){
+    this->type = IfN;
+    this->cond = cond;
+    this->body = body;
+}
 IfNode::IfNode(shared_ptr<Node> cond, vector<shared_ptr<Node>> body, vector<shared_ptr<Node>> els){
     this->type = IfN;
     this->cond = cond;
