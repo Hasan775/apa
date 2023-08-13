@@ -12,7 +12,7 @@ TokenType::TokenType(string name, string regexp){
 vector<TokenType> tokenTypes = {
     TokenType("PUNC", "[\\(\\)\\[\\]\\{\\};,]"),
     TokenType("NUMBER", "-?[0-9]+"),
-    TokenType("OP", "[\\+\\-\\*\\/\\<\\>\\=]+"),
+    TokenType("OP", "[\\+\\-\\*\\/\\<\\>\\=\\|\\&]+"),
     TokenType("ID", "[a-zA-Z0-9]+"),
     TokenType("VAR", "[a-zA-Z0-9]+"),
     TokenType("SPACE", "\\s"),

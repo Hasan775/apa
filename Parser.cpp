@@ -5,6 +5,8 @@ map<string, int> precedence;
 map<string, int> GetPrecedence(){
     map<string, int> prec = {};
     prec["="] = 1;
+    prec["||"] = 2;
+    prec["&&"] = 2;
     prec[">"] = 3;
     prec["<"] = 3;
     prec[">="] = 3;

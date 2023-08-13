@@ -10,6 +10,7 @@ public:
     any runBinary(shared_ptr<BinaryOperationNode> node);
     any evalute(int left, int right, string op);
     any evalute(string left, string right, string op);
+    any evalute(bool left, bool right, string op);
     void SetVariable(string name, any value);
     any GetVariable(string name);
     any runCall(shared_ptr<CallNode> call);

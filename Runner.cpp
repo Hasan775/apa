@@ -63,6 +63,9 @@ any Runner::runBinary(shared_ptr<BinaryOperationNode> node){
     else if (left.type().name() == typeid(string).name()){
         res = evalute(any_cast<string>(left), any_cast<string>(right), node->op);
     }
+    else if (left.type().name() == typeid(bool).name()){
+        res = evalute(any_cast<bool>(left), any_cast<bool>(right), node->op);
+    }
     else{
         Error::throwMessage("Can't do any operation with this type");
     }
@@ -77,6 +80,9 @@ any Runner::evalute(int left, int right, string op){
     }
     else if (op == "*"){
         return left * right;
+    }
+    else if (op == "/"){
+        return left / right;
     }
     else if (op == ">"){
         return left > right;
@@ -93,8 +99,9 @@ any Runner::evalute(int left, int right, string op){
     else if (op == "=="){
         return left == right;
     }
-    else{
-        return left / right;
+    else {
+        Error::throwMessage("You can't do this operation with string");
+        return 0;
     }
 }
 any Runner::evalute(string left, string right, string op){
@@ -103,6 +110,18 @@ any Runner::evalute(string left, string right, string op){
     }
     else if (op == "=="){
         return left == right;
+    }
+    else{
+        Error::throwMessage("You can't do this operation with string");
+        return 0;
+    }
+}
+any Runner::evalute(bool left, bool right, string op){
+    if (op == "&&"){
+        return left && right;
+    }
+    else if (op == "||"){
+        return left || right;
     }
     else{
         Error::throwMessage("You can't do this operation with string");
