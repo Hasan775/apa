@@ -25,7 +25,7 @@ Parser::Parser(vector<Token> tokens){
     precedence = GetPrecedence();
 }
 void Parser::UnexpectedToken(){
-    Error::throwMessage("Unexpected token type: " + tok.type.name + " on pos " +  to_string(pos)+ ";value is equal to" + tok.value);
+    Error::throwMessage("Unexpected token type: " + tok.type.name + " on pos " +  to_string(pos)+ ";value is equal to " + tok.value);
 }
 bool Parser::match(TokenType type){
     if (tok.type.name == type.name){
@@ -166,6 +166,20 @@ shared_ptr<Node> Parser::parseCall(){
     auto call = make_shared<CallNode>(name, delimited("(", ")", ","));
     return call;
 }
+shared_ptr<Node> Parser::parseFunction(){
+    require(tokentypes["ID"], "func");
+    auto name = tok.value;
+    next();
+    auto operands = delimited("(", ")", ",");
+    auto body = delimited("{", "}", ";");
+    auto func = make_shared<FunctionNode>(name, operands, body);
+    return func;
+}
+shared_ptr<Node> Parser::parseReturn(){
+    require(tokentypes["ID"], "return");
+    auto st = make_shared<ReturnNode>(parsePart());
+    return st;
+}
 shared_ptr<Node> Parser::parseIf(){
     require(tokentypes["ID"], "if");
     require(tokentypes["PUNC"], "(");
@@ -211,6 +225,12 @@ shared_ptr<Node> Parser::parseKeyword(){
     }
     if (tok.value == "while" || tok.value == "for"){
         return parseCycle(tok.value);
+    }
+    if (tok.value == "func"){
+        return parseFunction();
+    }
+    if (tok.value == "return"){
+        return parseReturn();
     }
     return nullptr;
 }

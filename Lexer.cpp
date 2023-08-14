@@ -5,7 +5,9 @@ vector<string> keywords = {"true",
 "if",
 "else",
 "while",
-"for"};
+"for",
+"func",
+"return"};
 bool Lexer::CheckToKeyWord(string word){
     for (auto keyword : keywords){
         if (keyword == word){

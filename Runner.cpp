@@ -31,6 +31,10 @@ any Runner::run(shared_ptr<Node> node){
         auto n = node->getNode(new CallNode);
         return runCall(n);
     }
+    else if (node->getType() == FunctionN){
+        auto n = node->getNode(new FunctionNode);
+        CreateFunction(n);
+    }
     else if (node->getType() == IfN){
         auto n = node->getNode(new IfNode);
         runIf(n);
@@ -38,6 +42,10 @@ any Runner::run(shared_ptr<Node> node){
     else if (node->getType() == CycleN){
         auto n = node->getNode(new CycleNode);
         runCycle(n);
+    }
+    else if (node->getType() == ReturnN){
+        auto n = node->getNode(new ReturnNode);
+        return run(n->statement);
     }
     return 0;
 }
@@ -147,12 +155,12 @@ any Runner::runCall(shared_ptr<CallNode> call){
             cout<<any_cast<bool>(arg)<<"\n";
         }
     }
-    if (call->name == "input"){
+    else if (call->name == "input"){
         string read;
         cin>>read;
         return read;
     }
-    if (call->name == "int"){
+    else if (call->name == "int"){
         any arg = run(call->operands[0]);
         if (arg.type().name() == typeid(string).name()){
             return stoi(any_cast<string>(arg));
@@ -160,6 +168,33 @@ any Runner::runCall(shared_ptr<CallNode> call){
         else if (arg.type().name() == typeid(bool).name()){
             return any_cast<bool>(arg);
         }
+    }
+    else{
+        return runFunction(call->name, call->operands);
+    }
+    return 0;
+}
+void Runner::CreateFunction(shared_ptr<FunctionNode> node){
+    for (auto n : node->operands){
+        if (n->getType() != VariableN){
+            Error::throwMessage("Function declaration argument can only be variable");
+            return;
+        }
+    }
+    functions[node->name] = node;
+}
+any Runner::runFunction(string name, vector<shared_ptr<Node>> args){
+    auto node = functions[name];
+    Runner runner = Runner();
+    for (int i = 0; i < node->operands.size(); i++){
+        auto varn = node->operands[i]->getNode(new VariableNode());
+        runner.SetVariable(varn->name, run(args[i]));
+    }
+    for (auto exprn : node->body){
+        if (exprn->getType() == ReturnN){
+            return runner.run(exprn);
+        }
+        runner.run(exprn);
     }
     return 0;
 }

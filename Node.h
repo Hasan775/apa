@@ -15,8 +15,10 @@ enum NodeTypes{
     BinaryOperationN,
     VariableN,
     CallN,
+    FunctionN,
     IfN,
-    CycleN
+    CycleN,
+    ReturnN
 };
 class Node;
 class ExpressionNode;
@@ -25,9 +27,11 @@ class StringNode;
 class BoolNode;
 class BinaryOperationNode;
 class VariableNode;
+class FunctionNode;
 class CallNode;
 class IfNode;
 class CycleNode;
+class ReturnNode;
 class Node{
 protected:
     NodeTypes type;
@@ -40,8 +44,10 @@ public:
     virtual shared_ptr<BinaryOperationNode> getNode(BinaryOperationNode* node);
     virtual shared_ptr<VariableNode> getNode(VariableNode* node);
     virtual shared_ptr<CallNode> getNode(CallNode* node);
+    virtual shared_ptr<FunctionNode> getNode(FunctionNode* node);
     virtual shared_ptr<IfNode> getNode(IfNode* node);
     virtual shared_ptr<CycleNode> getNode(CycleNode* node);
+    virtual shared_ptr<ReturnNode> getNode(ReturnNode* node);
 };
 class ExpressionNode : public Node{
 public:
@@ -95,6 +101,15 @@ public:
     CallNode();
     CallNode(string name, vector<shared_ptr<Node>> operands);
 };
+class FunctionNode : public Node{
+public:
+    string name;
+    vector<shared_ptr<Node>> operands;
+    vector<shared_ptr<Node>> body;
+    shared_ptr<FunctionNode> getNode(FunctionNode* node) override;
+    FunctionNode();
+    FunctionNode(string name, vector<shared_ptr<Node>> operands, vector<shared_ptr<Node>> body);
+};
 class IfNode : public Node{
 public:
     shared_ptr<Node> cond;
@@ -113,4 +128,11 @@ public:
     shared_ptr<CycleNode> getNode(CycleNode* node) override;
     CycleNode();
     CycleNode(string name, vector<shared_ptr<Node>> cond, vector<shared_ptr<Node>> body);
+};
+class ReturnNode : public Node{
+public:
+    shared_ptr<Node> statement;
+    shared_ptr<ReturnNode> getNode(ReturnNode* node) override;
+    ReturnNode();
+    ReturnNode(shared_ptr<Node> statement);
 };

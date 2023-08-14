@@ -39,12 +39,22 @@ shared_ptr<CallNode> Node::getNode(CallNode* node){
     Error::throwMessage("This node type can't access to this method");
     return nullptr;
 }
+shared_ptr<FunctionNode> Node::getNode(FunctionNode* node){
+    delete node;
+    Error::throwMessage("This node type can't access to this method");
+    return nullptr;
+}
 shared_ptr<IfNode> Node::getNode(IfNode* node){
     delete node;
     Error::throwMessage("This node type can't access to this method");
     return nullptr;
 }
 shared_ptr<CycleNode> Node::getNode(CycleNode* node){
+    delete node;
+    Error::throwMessage("This node type can't access to this method");
+    return nullptr;
+}
+shared_ptr<ReturnNode> Node::getNode(ReturnNode* node){
     delete node;
     Error::throwMessage("This node type can't access to this method");
     return nullptr;
@@ -159,6 +169,23 @@ CallNode::CallNode(string name, vector<shared_ptr<Node>> operands){
 }
 
 
+//FunctionNode class
+shared_ptr<FunctionNode> FunctionNode::getNode(FunctionNode* node){
+    delete node;
+    auto expr = make_shared<FunctionNode>(name, operands, body);
+    return expr;
+}
+FunctionNode::FunctionNode(){
+    this->type = FunctionN;
+}
+FunctionNode::FunctionNode(string name, vector<shared_ptr<Node>> operands, vector<shared_ptr<Node>> body){
+    this->type = FunctionN;
+    this->name = name;
+    this->operands = operands;
+    this->body = body;
+}
+
+
 //IfNode class
 shared_ptr<IfNode> IfNode::getNode(IfNode* node){
     delete node;
@@ -195,4 +222,19 @@ CycleNode::CycleNode(string name, vector<shared_ptr<Node>> cond, vector<shared_p
     this->name = name;
     this->cond = cond;
     this->body = body;
+}
+
+
+//ReturnNode class
+shared_ptr<ReturnNode> ReturnNode::getNode(ReturnNode* node){
+    delete node;
+    auto expr = make_shared<ReturnNode>(statement);
+    return expr;
+}
+ReturnNode::ReturnNode(){
+    this->type = ReturnN;
+}
+ReturnNode::ReturnNode(shared_ptr<Node> statement){
+    this->type = ReturnN;
+    this->statement = statement;
 }
