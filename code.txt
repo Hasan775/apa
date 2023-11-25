@@ -1,5 +1,2 @@
-func fact(i){
-    return fact(i);
-};
-i = 5;
-print(fact(i));
+a = 2 * 3;
+print(a);

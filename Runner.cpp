@@ -1,5 +1,8 @@
 #include "Runner.h"
 any Runner::run(shared_ptr<Node> node){
+    if (isreturned){
+        return 0;
+    }
     if (node->getType() == ExpressinN){
         auto n = node->getNode(new ExpressionNode);
         for(auto no : n->nodes){
@@ -45,8 +48,11 @@ any Runner::run(shared_ptr<Node> node){
     }
     else if (node->getType() == ReturnN){
         auto n = node->getNode(new ReturnNode);
-        return run(n->statement);
+        retres = run(n->statement);
+        type = ret;
+        isreturned = true;
     }
+    
     return 0;
 }
 any Runner::runBinary(shared_ptr<BinaryOperationNode> node){
@@ -185,17 +191,24 @@ void Runner::CreateFunction(shared_ptr<FunctionNode> node){
 }
 any Runner::runFunction(string name, vector<shared_ptr<Node>> args){
     auto node = functions[name];
-    Runner runner = Runner();
+    map<string, any> nvariables;
+    map<string, any> ovariables;
     for (int i = 0; i < node->operands.size(); i++){
-        auto varn = node->operands[i]->getNode(new VariableNode());
-        runner.SetVariable(varn->name, run(args[i]));
+        auto var = node->operands[i]->getNode(new VariableNode);
+        nvariables[var->name] = run(args[i]);
     }
+    ovariables = variables;
+    variables = nvariables;
     for (auto exprn : node->body){
-        if (exprn->getType() == ReturnN){
-            return runner.run(exprn);
+        isreturned = false;
+        auto res = run(exprn);
+        if (isreturned){
+            isreturned = false;
+            variables = ovariables;
+            return retres;
         }
-        runner.run(exprn);
     }
+    variables = ovariables;
     return 0;
 }
 void Runner::runIf(shared_ptr<IfNode> node){

@@ -3,9 +3,17 @@
 #include <map>
 #include <type_traits>
 #include"Node.h"
+enum ReturnTypes{
+    ret,
+    cont,
+    brk
+};
 class Runner{
 public:
     map<string, any> variables;
+    bool isreturned;
+    ReturnTypes type;
+    any retres;
     map<string, shared_ptr<FunctionNode>> functions;
     any run(shared_ptr<Node> node);
     any runBinary(shared_ptr<BinaryOperationNode> node);

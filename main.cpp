@@ -74,20 +74,21 @@ void printAST(shared_ptr<Node> n, string offset){
         cout<<offset<<"]"<<"\n";
     }
 }
-string ReadFile(){
+string ReadFile(string path){
     string line, code = "";
 
     ifstream File;
-    File.open("../code.txt");
+    File.open(path);
     while (File) {
         code += File.get();
     }
     File.close();
     return code.substr(0, code.size() - 1);
 }
-int main(){
+int main(int argc, char* argv[]){
+    string pa = argv[1];
     Lexer lexer = Lexer();
-    string code = ReadFile();
+    string code = ReadFile(pa);
     lexer.code = code;
     vector<Token> tokens = lexer.lexAnalysis();
     tokens = lexer.FilterTokens(tokens);
